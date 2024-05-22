@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>随机移动反弹图片与背景颜色变化</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        position: relative;
+        height: 100vh;
+        transition: background-color 1s; /* 平滑过渡背景颜色 */
+    }
+    .movingImage {
+        position: absolute;
+        max-width: 300px; /* 最大宽度设置为300px */
+        max-height: 300px; /* 最大高度设置为300px */
+        width: auto; /* 宽度自动 */
+        height: auto; /* 高度自动 */
+    }
+</style>
+</head>
+<body>
+
+<!-- 添加7张图片 -->
+<img class="movingImage" src="https://img.alicdn.com/imgextra/i1/O1CN015nYvex25X5JZykaFO_!!6000000007535-0-tps-960-1280.jpg" alt="移动图片1">
+<img class="movingImage" src="https://img.alicdn.com/imgextra/i4/O1CN018yIhaJ1kR29O87GBl_!!6000000004679-0-tps-960-1280.jpg" alt="移动图片2">
+<img class="movingImage" src="https://img.alicdn.com/imgextra/i2/O1CN01uX0fdo1YyfqvGPvU6_!!6000000003128-0-tps-960-1280.jpg" alt="移动图片3">
+<img class="movingImage" src="https://img.alicdn.com/imgextra/i4/O1CN015Fkv171oBhLwpMUQJ_!!6000000005187-0-tps-492-1276.jpg" alt="移动图片4">
+<img class="movingImage" src="https://img.alicdn.com/imgextra/i4/O1CN01uh6jhT23XQNQlHEbM_!!6000000007265-0-tps-960-1280.jpg" alt="移动图片5">
+<img class="movingImage" src="https://img.alicdn.com/imgextra/i4/O1CN01VjBs4G1TCW85h8SNQ_!!6000000002346-0-tps-1280-960.jpg" alt="移动图片6">
+<img class="movingImage" src="https://img.alicdn.com/imgextra/i2/O1CN01Wdy0Ud1xkLrUIMCAx_!!6000000006481-0-tps-770-1280.jpg" alt="移动图片7">
+
+<script>
+const images = document.querySelectorAll('.movingImage');
+const imageData = [];
+
+// 随机颜色生成函数
+function getRandomColor() {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16);
+}
+
+// 初始化每张图片的位置和速度
+images.forEach((img) => {
+    img.onload = function() {
+        const data = {
+            element: img,
+            posX: Math.random() * (window.innerWidth - img.clientWidth),
+            posY: Math.random() * (window.innerHeight - img.clientHeight),
+            // 加快速度
+            velocityX: (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 8),
+            velocityY: (Math.random() < 0.5 ? -1 : 1) * (4 + Math.random() * 8)
+        };
+        imageData.push(data);
+    };
+    if (img.complete) {
+        img.onload();
+    }
+});
+
+// 更新位置和检测边缘碰撞
+function updatePosition() {
+    imageData.forEach((data) => {
+        data.posX += data.velocityX;
+        data.posY += data.velocityY;
+
+        if (data.posX <= 0 || data.posX + data.element.clientWidth >= window.innerWidth) {
+            data.velocityX = -data.velocityX;
+        }
+        if (data.posY <= 0 || data.posY + data.element.clientHeight >= window.innerHeight) {
+            data.velocityY = -data.velocityY;
+        }
+
+        data.element.style.left = data.posX + 'px';
+        data.element.style.top = data.posY + 'px';
+    });
+
+    requestAnimationFrame(updatePosition);
+}
+
+// 开始动画
+requestAnimationFrame(updatePosition);
+
+// 更改背景颜色
+function changeBackgroundColor() {
+    document.body.style.backgroundColor = getRandomColor();
+}
+
+// 每1秒更改一次背景颜色
+setInterval(changeBackgroundColor, 1000);
+
+</script>
+
+</body>
+</html>
